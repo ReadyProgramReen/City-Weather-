@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './Weather.css'
 import search_icon from '../assets/search.png'
 import clear_icon from '../assets/clear.png'
@@ -12,6 +12,7 @@ import humidity_icon from '../assets/humidity.png'
 
 const Weather = () => {
 
+    const inputRef = useRef()
     const [weatherData,setweatherData] = useState(false)
 
     //icon code to display our own image
@@ -42,7 +43,7 @@ const Weather = () => {
             const res = await fetch(url);
             const data = await res.json();
             console.log(data);
-            const icon = allIcon[data.weather[0].icon] 
+            const icon = allIcon[data.weather[0].icon] || clear_icon
             setweatherData({
                 humidity: data.main.humidity,
                 windspeed: data.wind.speed,
@@ -56,18 +57,18 @@ const Weather = () => {
     }
 
     useEffect(()=>{
-        search('London')
+        search('New York')
     },[])
   return (
     <div className='weather'>
         {/* search bar div */}
             <div className="search-bar">
-        <input type="text" placeholder='Search Location' />
-        <img src={search_icon} alt="" />
+        <input ref={inputRef} type="text" placeholder='Search Location' />
+        <img src={search_icon} alt="" onClick={()=>search(inputRef.current.value)} />
      </div>
 
      {/* weather image  */}
-     <img src={clear_icon} alt=""  className='weather-icon'/>
+     <img src={weatherData.icon} alt="weather icon"  className='weather-icon'/>
      <p className='temperature'>{weatherData.temperature} C</p>
      <p className='location'>{weatherData.location}</p>
     
