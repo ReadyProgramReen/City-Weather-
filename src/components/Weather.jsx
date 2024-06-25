@@ -37,11 +37,18 @@ const Weather = () => {
     }
 
     const search = async (city)=>{
+        if(city === ''){
+            alert("Please enter city name")
+            return;
+        }
         try {
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_APP_ID}`;
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${import.meta.env.VITE_APP_ID}`;
 
             const res = await fetch(url);
             const data = await res.json();
+
+            if(!res.ok) return alert(data.message)
+
             console.log(data);
             const icon = allIcon[data.weather[0].icon] || clear_icon
             setweatherData({
@@ -51,8 +58,9 @@ const Weather = () => {
                 location:data.name,
                 icon:icon
             })
-        } catch (err) {
-            console.log(err)
+        } catch (error) {
+            setweatherData(false)
+            console.error('Error in fetching weather data')
         }
     }
 
@@ -67,9 +75,11 @@ const Weather = () => {
         <img src={search_icon} alt="" onClick={()=>search(inputRef.current.value)} />
      </div>
 
+     {/* used ternery operator to check if the weather data is avaiable ; if not clear all data */}
+
      {/* weather image  */}
      <img src={weatherData.icon} alt="weather icon"  className='weather-icon'/>
-     <p className='temperature'>{weatherData.temperature} C</p>
+     <p className='temperature'>{weatherData.temperature} °F</p>
      <p className='location'>{weatherData.location}</p>
     
     {/* weather data  div with 2 column  */}
@@ -89,7 +99,7 @@ const Weather = () => {
             </div>
         </div>
 
-    </div>
+    </div>  
     </div>
   )
 }
